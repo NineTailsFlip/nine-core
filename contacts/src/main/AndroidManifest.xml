@@ -1,0 +1,58 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Android 11+ package visibility: without this, resolveActivity() for an smsto: intent
+         returns null from a host app's process even when a messaging app is installed and
+         handling it. Found the hard way — ContactDetailActivity's Call/Message chooser silently
+         lost its Message option and, worse, fell straight through to placing the call.
+
+         Declared here in the library manifest rather than in each host, since it exists for
+         :contacts' own code and merges into every host that uses it.
+
+         The SyncAdapter intent is the same mechanism for AccountTypes: reading another app's
+         contacts-structure metadata (which says whether its contacts are editable) needs its
+         sync adapter service to be visible. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
+        <intent>
+            <action android:name="android.content.SyncAdapter" />
+        </intent>
+        <!-- ContactHandoff's resolveActivity() checks ("New contact"/"Add to existing contact"). -->
+        <intent>
+            <action android:name="android.intent.action.INSERT" />
+            <data android:mimeType="vnd.android.cursor.dir/contact" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.INSERT_OR_EDIT" />
+            <data android:mimeType="vnd.android.cursor.item/contact" />
+        </intent>
+    </queries>
+    <application>
+        <!-- Bare on purpose (no intent filters, above all no MAIN/LAUNCHER): a library manifest
+             merges into every host, and P9 must not sprout a contacts icon it isn't supposed to
+             have. Everything that makes C9's contacts screen a launcher entry — the
+             ContactsLauncher activity-alias, the VIEW/EDIT filters, taskAffinity,
+             launchMode, windowSoftInputMode — is re-declared in C9's own manifest against these
+             same activity names; the merger unions the two declarations, app attributes winning.
+             P9 re-declares nothing, so it gets exactly this bare version. -->
+        <activity
+            android:name="life.furrer.nine.contacts.ContactsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nine" />
+        <activity
+            android:name="life.furrer.nine.contacts.ContactDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nine" />
+        <activity
+            android:name="life.furrer.nine.contacts.GroupsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nine" />
+        <activity
+            android:name="life.furrer.nine.contacts.ContactValuePickerActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.Nine" />
+    </application>
+</manifest>

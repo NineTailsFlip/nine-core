@@ -19,4 +19,5 @@ dependencyResolutionManagement {
 // so this file is only read when working on nine-core by itself.
 rootProject.name = "nine-core"
 include(":core")
+include(":contacts")
 include(":kit")

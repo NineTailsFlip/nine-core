@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.5.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.5.0)" variant="all" version="8.5.0">
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="                text = &quot;‹ contact&quot;"
+        errorLine2="                       ~~~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactDetailActivity.kt"
+            line="84"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="                text = &quot;‹ contact&quot;"
+        errorLine2="                        ~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactDetailActivity.kt"
+            line="84"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="            linkedLine.text = &quot;LINKED · &quot; + detail.rawContacts.mapNotNull { it.accountName }.distinct().joinToString(&quot;, &quot;).uppercase()"
+        errorLine2="                              ~~~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactDetailActivity.kt"
+            line="276"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="            linkedLine.text = &quot;LINKED · &quot; + detail.rawContacts.mapNotNull { it.accountName }.distinct().joinToString(&quot;, &quot;).uppercase()"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactDetailActivity.kt"
+            line="276"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="            linkedLine.text = &quot;LINKED · &quot; + detail.rawContacts.mapNotNull { it.accountName }.distinct().joinToString(&quot;, &quot;).uppercase()"
+        errorLine2="                               ~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactDetailActivity.kt"
+            line="276"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="            countLabel.text = &quot;$matchCount of ${allContacts.size} contacts&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactsActivity.kt"
+            line="316"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="            countLabel.text = &quot;$matchCount of ${allContacts.size} contacts&quot;"
+        errorLine2="                                          ~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactsActivity.kt"
+            line="316"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="            countLabel.text = &quot;$matchCount of ${allContacts.size} contacts&quot;"
+        errorLine2="                                                                 ~~~~~~~~~">
+        <location
+            file="src/main/java/life/furrer/nine/contacts/ContactsActivity.kt"
+            line="316"
+            column="66"/>
+    </issue>
+
+</issues>
