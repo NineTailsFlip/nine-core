@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="life.furrer.nine.core.manual.ManualActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.Nine" />
+        <activity
+            android:name="life.furrer.nine.core.ui.DatePickerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nine" />
+        <activity
+            android:name="life.furrer.nine.core.ui.ColorPickerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Nine" />
+    </application>
+</manifest>
