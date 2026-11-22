@@ -21,3 +21,4 @@ rootProject.name = "nine-core"
 include(":core")
 include(":contacts")
 include(":kit")
+include(":update")

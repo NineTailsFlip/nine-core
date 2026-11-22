@@ -1,0 +1,19 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Checking GitHub for a newer release and downloading it. Only ever talks to github.com
+         (and the storage GitHub serves release files from), and only while update checks are on
+         or the user asks. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Handing the downloaded update to Android's installer. Android still asks the user to
+         allow it once ("Install unknown apps"), and to confirm each update. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <application>
+        <activity
+            android:name="io.github.ninetailsflip.update.UpdateActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/Theme.Nine" />
+    </application>
+</manifest>
