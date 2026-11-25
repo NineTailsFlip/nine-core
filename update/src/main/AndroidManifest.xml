@@ -8,6 +8,12 @@
          allow it once ("Install unknown apps"), and to confirm each update. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
+    <!-- Reading the look chosen in the phone's first-time setup (SetupChoices): Android only
+         lets an app see another app's provider when it says so here. -->
+    <queries>
+        <provider android:authorities="io.github.ninetailsflip.setup.choices" />
+    </queries>
+
     <application>
         <activity
             android:name="io.github.ninetailsflip.update.UpdateActivity"

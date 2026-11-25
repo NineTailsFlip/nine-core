@@ -16,7 +16,8 @@ import java.util.concurrent.Executors
 
 /** Updates from the app's GitHub releases.
  *
- *  Each app calls [init] once from Application.onCreate with its repository. From then on, while
+ *  Each app calls [init] once from Application.onCreate with its repository, after Nine.init
+ *  (it also adopts the first-time setup's choices then: [SetupChoices]). From then on, while
  *  update checks are on (Settings → Updates; on by default), the first time a day that the app's
  *  main screen comes up, this fetches the latest release's update.json. When it's newer than
  *  what's installed — and the user hasn't skipped that version — [UpdateActivity] opens once,
@@ -55,6 +56,8 @@ object Updates {
     fun init(app: Application, repo: String) {
         appContext = app.applicationContext
         this.repo = repo
+        // The suite-wide look chosen in the phone's first-time setup, if there was one.
+        SetupChoices.adopt(appContext)
         app.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
             override fun onActivityResumed(activity: Activity) = onResumed(activity)
             override fun onActivityPaused(activity: Activity) {
