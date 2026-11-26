@@ -242,6 +242,9 @@ class UpdateActivity : NineActivity() {
             val installer = packageManager.packageInstaller
             val params = PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
                 setAppPackageName(packageName)
+                // An app updating itself: no stock confirmation dialog on top of the Nine one.
+                // Android falls back to asking (STATUS_PENDING_USER_ACTION) when it won't allow it.
+                setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED)
             }
             val sessionId = installer.createSession(params)
             installer.openSession(sessionId).use { session ->

@@ -30,9 +30,11 @@ types needs to know it.
 Once a day, when the app's main screen opens, it reads the latest release's `update.json`
 (written by the release workflow in [NineTailsFlip/.github](https://github.com/NineTailsFlip/.github)).
 If there is a newer version, it offers it once; OK downloads the APK for the phone's ABI, checks
-its SHA-256 and hands it to Android's installer, which checks the signature. Settings → Updates
-turns the check off or runs it now. It adds the `INTERNET` and `REQUEST_INSTALL_PACKAGES`
-permissions.
+its SHA-256 and hands it to Android's installer, which checks the signature. The app updates
+itself, so Android installs it without a confirmation dialog of its own (OK on the Nine screen is
+the confirmation); where Android insists, its dialog still comes. Settings → Updates turns the
+check off or runs it now. It adds the `INTERNET`, `REQUEST_INSTALL_PACKAGES` and
+`UPDATE_PACKAGES_WITHOUT_USER_ACTION` permissions.
 
 `SetupChoices` adopts the font and hint bar the phone's first-time setup serves
 (`io.github.ninetailsflip.setup.choices`), once per revision, into the app's own Settings → Theme.

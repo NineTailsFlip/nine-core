@@ -4,9 +4,12 @@
          (and the storage GitHub serves release files from), and only while update checks are on
          or the user asks. -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Handing the downloaded update to Android's installer. Android still asks the user to
-         allow it once ("Install unknown apps"), and to confirm each update. -->
+    <!-- Handing the downloaded update to Android's installer. The app updates itself, so with
+         UPDATE_PACKAGES_WITHOUT_USER_ACTION Android installs it without its own confirmation
+         (the user already said yes on the Nine update screen); otherwise Android asks once to
+         allow it ("Install unknown apps") and to confirm each update. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
     <!-- Reading the look chosen in the phone's first-time setup (SetupChoices): Android only
          lets an app see another app's provider when it says so here. -->
