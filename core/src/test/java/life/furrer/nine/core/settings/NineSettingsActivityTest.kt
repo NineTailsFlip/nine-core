@@ -69,9 +69,7 @@ class NineSettingsActivityTest {
         Robolectric.buildActivity(FakeSettingsActivity::class.java).setup().get()
 
     private fun rowContainer(activity: FakeSettingsActivity): LinearLayout {
-        // The content is a frame: the scrolling rows, with the confirmation sheet over them.
-        val frame = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ViewGroup
-        val scrollView = frame.getChildAt(0) as ScrollView
+        val scrollView = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ScrollView
         return scrollView.getChildAt(0) as LinearLayout
     }
 
@@ -153,8 +151,8 @@ class NineSettingsActivityTest {
         val import = rows(activity).indexOfFirst { it.text == "Import settings" }
         repeat(import) { press(activity, KeyEvent.KEYCODE_DPAD_DOWN) }
         press(activity, KeyEvent.KEYCODE_DPAD_CENTER)
-        val frame = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ViewGroup
-        val sheet = frame.getChildAt(1) as life.furrer.nine.core.ui.MenuSheet
+        // Over the rows, the content's second child.
+        val sheet = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(1) as life.furrer.nine.core.ui.MenuSheet
         assertTrue(sheet.isShowing)
         // No picker yet: the question is still up.
         assertEquals(null, org.robolectric.Shadows.shadowOf(activity).nextStartedActivityForResult)

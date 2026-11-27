@@ -38,6 +38,7 @@ class MenuSheet(context: Context) : FrameLayout(context) {
     private val listContainer: LinearLayout
     private val hintText: TextView
     private val questionText: TextView
+    private val column: LinearLayout
 
     var isShowing: Boolean = false
         private set
@@ -61,7 +62,6 @@ class MenuSheet(context: Context) : FrameLayout(context) {
             textSize = QUESTION_TEXT_SIZE_SP
             setTextColor(Palette.GRAY_DIM)
             setPadding(dp(ROW_SIDE_PADDING_DP), dp(QUESTION_TOP_PADDING_DP), dp(ROW_SIDE_PADDING_DP), dp(ROW_VERTICAL_PADDING_DP))
-            visibility = View.GONE
         }
         hintText = TextView(context).apply {
             text = "press a number · ↑↓ ok · ‹ close"
@@ -70,11 +70,10 @@ class MenuSheet(context: Context) : FrameLayout(context) {
             setPadding(dp(ROW_SIDE_PADDING_DP), dp(ROW_VERTICAL_PADDING_DP), dp(ROW_SIDE_PADDING_DP), dp(ROW_VERTICAL_PADDING_DP))
         }
         val rule = View(context).apply { setBackgroundColor(Palette.DIVIDER) }
-        val column = LinearLayout(context).apply {
+        column = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Palette.BLACK)
             addView(rule, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)))
-            addView(questionText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             addView(listContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             addView(hintText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         }
@@ -92,8 +91,13 @@ class MenuSheet(context: Context) : FrameLayout(context) {
      *  [question], when given, is shown unnumbered above the rows: what a confirmation asks, the
      *  suite's answer to an AlertDialog (see [confirm]). */
     fun show(items: List<MenuItem>, question: String? = null) {
+        // In the column only while there is one, so a plain menu is laid out exactly as before.
         questionText.text = question.orEmpty()
-        questionText.visibility = if (question.isNullOrEmpty()) View.GONE else View.VISIBLE
+        if (question.isNullOrEmpty()) {
+            column.removeView(questionText)
+        } else if (questionText.parent == null) {
+            column.addView(questionText, 1, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        }
         this.items = items
         this.selectedIndex = items.indexOfFirst { it.enabled }.coerceAtLeast(0)
         renderItems()

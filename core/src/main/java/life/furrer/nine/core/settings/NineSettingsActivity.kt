@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -88,13 +87,10 @@ abstract class NineSettingsActivity : NineActivity() {
             isFocusableInTouchMode = false
             descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
         }
+        setContentView(scrollView)
+        // Over the rows, in the content frame itself: the rows stay the content's first child.
         menuSheet = MenuSheet(this)
-        setContentView(
-            FrameLayout(this).apply {
-                addView(scrollView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-                addView(menuSheet, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            },
-        )
+        addContentView(menuSheet, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
         // A section with no rows (e.g. Backup, before a later phase gives every app one) renders
         // nothing at all, header included, rather than an empty heading with nothing under it.
