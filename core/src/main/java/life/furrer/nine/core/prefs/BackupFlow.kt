@@ -1,14 +1,12 @@
 package life.furrer.nine.core.prefs
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import life.furrer.nine.core.Nine
-import life.furrer.nine.core.ui.dialogThemeResId
 
 /** The export/import UI flow around [Backup] — the SAF intents, the "this replaces everything"
  *  confirm dialog, and result handling/toasts — that [life.furrer.nine.core.settings.NineSettingsActivity]'s
@@ -27,22 +25,16 @@ object BackupFlow {
         activity.startActivityForResult(intent, REQUEST_EXPORT)
     }
 
-    fun confirmImport(activity: Activity) {
-        AlertDialog.Builder(activity, activity.dialogThemeResId())
-            .setTitle("Import settings")
-            .setMessage("This replaces all current ${Nine.app.name} settings with the contents of the chosen file.")
-            .setPositiveButton("Choose file") { _, _ ->
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    // Not restricted to "application/json" — many file managers report JSON
-                    // files under a different MIME type, and Backup validates the content itself
-                    // once a file is picked.
-                    type = "*/*"
-                }
-                activity.startActivityForResult(intent, REQUEST_IMPORT)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+    /** Opens the file picker for an import; the caller asks first (Settings' "Import settings"
+     *  row confirms on its sheet), since the file replaces every current setting. */
+    fun chooseImportFile(activity: Activity) {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            // Not restricted to "application/json" — many file managers report JSON files under a
+            // different MIME type, and Backup validates the content itself once a file is picked.
+            type = "*/*"
+        }
+        activity.startActivityForResult(intent, REQUEST_IMPORT)
     }
 
     /** @return true if [requestCode] was one of ours (handled either way), so the caller knows

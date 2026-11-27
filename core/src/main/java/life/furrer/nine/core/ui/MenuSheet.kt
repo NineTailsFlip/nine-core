@@ -22,6 +22,8 @@ private const val ROW_SIDE_PADDING_DP = Dimens.SIDE_PADDING_DP
 // those other rows.
 private const val ROW_VERTICAL_PADDING_DP = Dimens.ROW_VERTICAL_PADDING_DP
 private const val HINT_TEXT_SIZE_SP = 11f
+private const val QUESTION_TEXT_SIZE_SP = 15f
+private const val QUESTION_TOP_PADDING_DP = 10
 
 /** The numbered `*` menu overlay from §9.6. Hosting activities must be FrameLayout-rooted so
  *  this can sit on top as an extra child added once in onCreate, and must check
@@ -35,6 +37,7 @@ class MenuSheet(context: Context) : FrameLayout(context) {
     private var selectedIndex: Int = 0
     private val listContainer: LinearLayout
     private val hintText: TextView
+    private val questionText: TextView
 
     var isShowing: Boolean = false
         private set
@@ -54,6 +57,12 @@ class MenuSheet(context: Context) : FrameLayout(context) {
         visibility = View.GONE
 
         listContainer = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+        questionText = TextView(context).apply {
+            textSize = QUESTION_TEXT_SIZE_SP
+            setTextColor(Palette.GRAY_DIM)
+            setPadding(dp(ROW_SIDE_PADDING_DP), dp(QUESTION_TOP_PADDING_DP), dp(ROW_SIDE_PADDING_DP), dp(ROW_VERTICAL_PADDING_DP))
+            visibility = View.GONE
+        }
         hintText = TextView(context).apply {
             text = "press a number · ↑↓ ok · ‹ close"
             textSize = HINT_TEXT_SIZE_SP
@@ -65,6 +74,7 @@ class MenuSheet(context: Context) : FrameLayout(context) {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Palette.BLACK)
             addView(rule, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1)))
+            addView(questionText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             addView(listContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             addView(hintText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         }
@@ -77,8 +87,13 @@ class MenuSheet(context: Context) : FrameLayout(context) {
     /** Shows [items] numbered 1..9, then 0 for a 10th row, the keypad's own order; any row past
      *  that has no number and is reached with Up/Down. Per §9.6, callers should only pass items that apply right
      *  now (an empty selection means no Edit/Delete row) — the menu numbers what's shown, not a
-     *  fixed slot list. */
-    fun show(items: List<MenuItem>) {
+     *  fixed slot list.
+     *
+     *  [question], when given, is shown unnumbered above the rows: what a confirmation asks, the
+     *  suite's answer to an AlertDialog (see [confirm]). */
+    fun show(items: List<MenuItem>, question: String? = null) {
+        questionText.text = question.orEmpty()
+        questionText.visibility = if (question.isNullOrEmpty()) View.GONE else View.VISIBLE
         this.items = items
         this.selectedIndex = items.indexOfFirst { it.enabled }.coerceAtLeast(0)
         renderItems()
@@ -98,6 +113,13 @@ class MenuSheet(context: Context) : FrameLayout(context) {
             }
             listContainer.addView(row)
         }
+    }
+
+    /** Asks before something that can't be undone, on the sheet rather than in a dialog — the way
+     *  M9, P9 and C9 already asked: [question] above, then "1 [yes]" and "2 [no]". Back or [no]
+     *  closes it with nothing done. */
+    fun confirm(question: String, yes: String, no: String = "Cancel", onYes: () -> Unit) {
+        show(listOf(MenuItem(yes, action = onYes), MenuItem(no) {}), question)
     }
 
     fun hide() {

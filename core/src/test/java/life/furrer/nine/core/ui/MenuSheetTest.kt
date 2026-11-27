@@ -126,4 +126,41 @@ class MenuSheetTest {
         assertTrue(chosen.isEmpty())
         assertFalse(sheet.isShowing)
     }
+
+    private fun texts(): List<String> {
+        val out = mutableListOf<String>()
+        fun walk(v: android.view.View) {
+            if (v is android.widget.TextView && v.visibility == android.view.View.VISIBLE) out += v.text.toString()
+            if (v is android.view.ViewGroup) for (i in 0 until v.childCount) walk(v.getChildAt(i))
+        }
+        walk(sheet)
+        return out
+    }
+
+    @Test
+    fun `a confirmation shows its question above the yes and no rows`() {
+        sheet.confirm("Log out?", "Log out") { chosen += "yes" }
+        assertEquals(listOf("Log out?", "1 Log out", "2 Cancel"), texts().take(3))
+        key(KeyEvent.KEYCODE_1)
+        assertEquals(listOf("yes"), chosen)
+        assertFalse(sheet.isShowing)
+    }
+
+    @Test
+    fun `no or Back does nothing`() {
+        sheet.confirm("Clear?", "Clear", "Keep") { chosen += "yes" }
+        key(KeyEvent.KEYCODE_2)
+        sheet.confirm("Clear?", "Clear", "Keep") { chosen += "yes" }
+        key(KeyEvent.KEYCODE_BACK)
+        assertTrue(chosen.isEmpty())
+        assertFalse(sheet.isShowing)
+    }
+
+    @Test
+    fun `a plain menu shows no question, even after a confirmation`() {
+        sheet.confirm("Clear?", "Clear") {}
+        sheet.hide()
+        sheet.show(listOf(item("a")))
+        assertEquals("1 a", texts().first())
+    }
 }

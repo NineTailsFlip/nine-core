@@ -69,7 +69,9 @@ class NineSettingsActivityTest {
         Robolectric.buildActivity(FakeSettingsActivity::class.java).setup().get()
 
     private fun rowContainer(activity: FakeSettingsActivity): LinearLayout {
-        val scrollView = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ScrollView
+        // The content is a frame: the scrolling rows, with the confirmation sheet over them.
+        val frame = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ViewGroup
+        val scrollView = frame.getChildAt(0) as ScrollView
         return scrollView.getChildAt(0) as LinearLayout
     }
 
@@ -143,6 +145,27 @@ class NineSettingsActivityTest {
         assertTrue(activity.flag)
         press(activity, KeyEvent.KEYCODE_DPAD_LEFT)
         assertTrue(!activity.flag)
+    }
+
+    @Test
+    fun `Import settings asks on the sheet first, and Back there keeps the screen`() {
+        val activity = buildActivity()
+        val import = rows(activity).indexOfFirst { it.text == "Import settings" }
+        repeat(import) { press(activity, KeyEvent.KEYCODE_DPAD_DOWN) }
+        press(activity, KeyEvent.KEYCODE_DPAD_CENTER)
+        val frame = activity.findViewById<ViewGroup>(android.R.id.content).getChildAt(0) as ViewGroup
+        val sheet = frame.getChildAt(1) as life.furrer.nine.core.ui.MenuSheet
+        assertTrue(sheet.isShowing)
+        // No picker yet: the question is still up.
+        assertEquals(null, org.robolectric.Shadows.shadowOf(activity).nextStartedActivityForResult)
+        // Back answers the sheet, not the screen.
+        press(activity, KeyEvent.KEYCODE_BACK)
+        assertFalse(sheet.isShowing)
+        assertFalse(activity.isFinishing)
+        // Asked again and answered yes: the file picker opens.
+        press(activity, KeyEvent.KEYCODE_DPAD_CENTER)
+        press(activity, KeyEvent.KEYCODE_1)
+        assertEquals(Intent.ACTION_OPEN_DOCUMENT, org.robolectric.Shadows.shadowOf(activity).nextStartedActivityForResult.intent.action)
     }
 
     @Test

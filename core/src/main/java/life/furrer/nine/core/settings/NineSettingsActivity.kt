@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -17,6 +18,7 @@ import life.furrer.nine.core.manual.ManualActivity
 import life.furrer.nine.core.prefs.BackupFlow
 import life.furrer.nine.core.prefs.NinePrefs
 import life.furrer.nine.core.ui.Dimens
+import life.furrer.nine.core.ui.MenuSheet
 import life.furrer.nine.core.ui.NineActivity
 import life.furrer.nine.core.ui.TextRole
 import life.furrer.nine.core.ui.applyRole
@@ -59,6 +61,9 @@ abstract class NineSettingsActivity : NineActivity() {
     }
 
     private lateinit var scrollView: ScrollView
+
+    /** For [confirm]: Settings asks on the same numbered sheet as every other screen. */
+    private lateinit var menuSheet: MenuSheet
     private val rowViews = mutableListOf<TextView>()
     private val rowSpecs = mutableListOf<RowSpec>()
     // The heading of the section whose first row is at this index, so selecting that row can
@@ -83,7 +88,13 @@ abstract class NineSettingsActivity : NineActivity() {
             isFocusableInTouchMode = false
             descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
         }
-        setContentView(scrollView)
+        menuSheet = MenuSheet(this)
+        setContentView(
+            FrameLayout(this).apply {
+                addView(scrollView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+                addView(menuSheet, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            },
+        )
 
         // A section with no rows (e.g. Backup, before a later phase gives every app one) renders
         // nothing at all, header included, rather than an empty heading with nothing under it.
@@ -126,7 +137,11 @@ abstract class NineSettingsActivity : NineActivity() {
 
     private fun buildBackupSection(scope: SectionScope) {
         scope.action("Export settings") { BackupFlow.export(this) }
-        scope.action("Import settings") { BackupFlow.confirmImport(this) }
+        scope.action("Import settings") {
+            confirm("Replace all current ${Nine.app.name} settings with the contents of a file?", "Choose file") {
+                BackupFlow.chooseImportFile(this)
+            }
+        }
     }
 
     private fun buildAboutSection(scope: SectionScope, surface: NineSurface) {
@@ -171,10 +186,20 @@ abstract class NineSettingsActivity : NineActivity() {
 
     /** Re-renders every row's text and selection style from current state. [onKeyDown] already
      *  calls this after every dispatch; a subclass needs it too whenever state changes outside a
-     *  keypress — an [android.app.AlertDialog] button, or [onActivityResult] after a picker
-     *  returns, neither of which retriggers [onResume]. */
+     *  keypress — an answer TDLib or a server sends back later, or [onActivityResult] after a
+     *  picker returns, neither of which retriggers [onResume]. */
     protected fun refresh() {
         render()
+    }
+
+    /** Asks [question] on the numbered sheet ([MenuSheet.confirm]) — the suite's way of asking,
+     *  in place of an AlertDialog — and runs [onYes] if the answer is [yes]. The rows re-render
+     *  either way. */
+    protected fun confirm(question: String, yes: String, no: String = "Cancel", onYes: () -> Unit) {
+        menuSheet.confirm(question, yes, no) {
+            onYes()
+            render()
+        }
     }
 
     private fun render() {
@@ -205,6 +230,7 @@ abstract class NineSettingsActivity : NineActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (menuSheet.handleKeyDown(keyCode, event)) return true
         if (rowSpecs.isEmpty()) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 finish()
